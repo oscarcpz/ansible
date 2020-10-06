@@ -1,0 +1,19 @@
+---
+- name: Get system info
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+
+    - debug:
+        var: ansible_facts
+
+    - debug:
+        msg: "My local ip: {{ ansible_facts['default_ipv4']['address'] }}"
+
+    - set_fact:
+        file_version: "{{ ansible_date_time.year }}.{{ ansible_date_time.month }}.{{ ansible_date_time.day }}.{{ ansible_date_time.hour }}.{{ ansible_date_time.minute }}"
+
+    - debug:
+        msg: "Let's create a file with the following name: myfile-{{ file_version }}.file"
+...
