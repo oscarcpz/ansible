@@ -1,0 +1,10 @@
+---
+- name: Get SO info
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+
+    - debug:
+        msg: "SO info: {{ ansible_facts['architecture'] }} - {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+...

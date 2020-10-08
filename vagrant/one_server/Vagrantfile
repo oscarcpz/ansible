@@ -1,0 +1,19 @@
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "debian/buster64"
+
+  config.vm.hostname = "oneserver"
+  config.vm.network "private_network", ip: "10.0.0.10"
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 2
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+     sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config    
+     systemctl restart sshd.service
+  SHELL
+
+end

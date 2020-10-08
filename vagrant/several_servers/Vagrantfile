@@ -1,0 +1,32 @@
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    config.vm.define "server1" do |server1|
+      server1.vm.box = "debian/buster64"
+      server1.vm.hostname = "server1"
+      server1.vm.network "private_network", ip: "10.0.0.101"
+      server1.vm.provider "virtualbox" do |v|
+        v.memory = 1024
+        v.cpus = 1
+      end
+      server1.vm.provision "shell", inline: <<-SHELL
+        sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config    
+        systemctl restart sshd.service
+      SHELL
+    end
+
+    config.vm.define "server2" do |server2|
+      server2.vm.box = "debian/buster64"
+      server2.vm.hostname = "server2"
+      server2.vm.network "private_network", ip: "10.0.0.102"
+      server2.vm.provider "virtualbox" do |v|
+        v.memory = 1024
+        v.cpus = 1
+      end
+      server2.vm.provision "shell", inline: <<-SHELL
+        sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config    
+        systemctl restart sshd.service
+      SHELL
+    end
+
+end
