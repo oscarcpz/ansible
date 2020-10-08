@@ -1,2 +1,2 @@
 [oneserver]
-server ansible_host=10.0.0.10 ansible_port=22 ansible_user=vagrant ansible_ssh_private_key_file=vagrant/one_server/.vagrant/machines/default/virtualbox/private_key
+server ansible_host=10.0.0.10 ansible_port=22 ansible_user=vagrant ansible_python_interpreter=/usr/bin/python3 ansible_ssh_private_key_file=vagrant/one_server/.vagrant/machines/default/virtualbox/private_key

@@ -1,0 +1,7 @@
+---
+conda_path: /opt/anaconda
+conda_bin: "{{ conda_path }}/bin"
+conda_envs: "{{ conda_path }}/envs"
+logs_dir: "{{ conda_path }}/var/log"
+jupyterhub_home: /opt/jupyterhub
+...

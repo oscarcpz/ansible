@@ -1,0 +1,25 @@
+---
+- name: Install Jupyterhub
+  hosts: all
+  gather_facts: yes
+
+  vars_files:
+    - vars/playbook_vars.yml
+
+  tasks:
+
+    - name: Install Conda
+      include_role:
+        name: conda
+      tags:
+        - conda
+
+    - name: Install Jupyterhub
+      include_role:
+        name: jupyterhub
+      loop: '{{ jupyters }}'
+      loop_control:
+        loop_var: jupyter
+      tags:
+        - install
+...

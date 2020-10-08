@@ -1,0 +1,54 @@
+---
+- name: "Check if Conda environment for {{ jupyter.name }} exists"
+  stat:
+    path: "{{ conda_envs }}/{{ jupyter.name }}"
+  register: file_details
+  tags:
+    - install
+
+- debug:
+    msg: "Environment exists"
+  when: file_details.stat.exists
+  tags:
+    - install
+
+- debug:
+    msg: "Environment does not exist, let's create it"
+  when: not file_details.stat.exists
+  tags:
+    - install
+
+- name: "Create environment for {{ jupyter.name }}"
+  command: "{{ conda_bin }}/conda create -y -c conda-forge -n {{ jupyter.name }} python=3 jupyterhub notebook"
+  when: not file_details.stat.exists
+  tags:
+    - install
+
+- name: Create logs directory
+  file:
+    path: '{{ conda_envs }}/{{ jupyter.name }}/{{ item }}'
+    state: directory
+  loop:
+    - '{{ logs_dir }}'
+    - 'etc/jupyterhub'
+    - 'var/log'
+  when: not file_details.stat.exists
+  tags:
+    - install
+
+- name: 'Copy run script into {{ conda_envs }}/{{ jupyter.name }}/bin'
+  template:
+    src: service_jupyterhub.sh
+    dest: "{{ conda_envs }}/{{ jupyter.name }}/bin/service_jupyterhub.sh"
+  when: not file_details.stat.exists
+  tags:
+    - install
+
+- name: 'Copy jupyterhub_config.py into {{ conda_envs }}/{{ jupyter.name }}/etc/jupyterhub'
+  template:
+    src: jupyterhub_config.py
+    dest: "{{ conda_envs }}/{{ jupyter.name }}/etc/jupyterhub/jupyterhub_config.py"
+  when: not file_details.stat.exists
+  tags:
+    - install
+...

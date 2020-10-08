@@ -1,0 +1,20 @@
+---
+- name: Start aws infraestructure
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/project.yml
+  tasks:
+    - name: Start the instance
+      ec2:
+        instance_ids: '{{ instance_id }}'
+        region: '{{ region }}'
+        state: running
+        wait: True
+      register: output
+      tags: ec2
+
+    - debug:
+        var: output
+      tags: ec2
+...

@@ -1,0 +1,37 @@
+---
+- name: "Ensure if Anaconda is installed in {{ conda_path }}"
+  stat:
+    path: "{{ conda_path }}/bin/python"
+  become: True
+  register: output_anaconda_installation_path
+  tags:
+    - conda
+
+- name: "Copy {{ anaconda_installer_file }} to {{ anaconda_installer_path }}"
+  copy:
+    src: "{{ role_path }}/files/{{ anaconda_installer_file }}"
+    dest: "{{ anaconda_installer_path }}/{{ anaconda_installer_file }}"
+    owner: "{{ ansible_user }}"
+    mode: 0755
+  when: output_anaconda_installation_path.stat.exists == False
+  tags:
+    - conda
+
+- name: "Install Anaconda in {{ conda_path }}"
+  command: "{{ anaconda_installer_path }}/{{ anaconda_installer_file }} -b -u -p {{ conda_path }}"
+  when: output_anaconda_installation_path.stat.exists == False
+  become: True
+  tags:
+    - conda
+
+- name: "{{ conda_path }} access 755"
+  file:
+    path: "{{ conda_path }}"
+    mode: '0755'
+    state: directory
+    recurse: yes
+  become: True
+  when: output_anaconda_installation_path.stat.exists == False
+  tags:
+    - conda
+...

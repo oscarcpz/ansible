@@ -1,0 +1,22 @@
+---
+# ansible-playbook -i inventory-aws check-status.yml
+- name: Start aws infraestructure
+  hosts: localhost
+  vars_files:
+    - vars/project.yml
+
+  tasks:
+  - ec2_instance_facts:
+      instance_ids:
+        - "{{ instance_id }}"
+    register: ec2_metadata
+    tags: ec2
+
+  - debug:
+      msg: "Status: {{ ec2_metadata.instances[0].state.name }}"
+    tags: ec2
+
+  - debug:
+      msg: "IP: {{ ec2_metadata.instances[0].public_ip_address }}"
+    tags: ec2
+...

@@ -1,0 +1,6 @@
+---
+conda_path: /opt/anaconda
+anaconda_repo: https://repo.continuum.io/archive
+anaconda_installer_path: /tmp
+anaconda_installer_file: Anaconda3-2020.07-Linux-x86_64.sh
+...

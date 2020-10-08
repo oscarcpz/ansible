@@ -1,0 +1,33 @@
+- name: Clone project
+  hosts: all
+
+  vars_files:
+    - vars/clone.yml
+  vars:
+    git_branch: "{{ branch | default('main') }}"
+
+  tasks:
+    - name: "Ensure Git is available"
+      apt:
+        name: git
+        state: present
+      become: true
+
+    - name: "Ensure directory exists"
+      file:
+        path: "{{ src_path }}/ansible"
+        state: directory
+        owner: "{{ ansible_user }}"
+      become: true
+
+    - name: "Ensure the master branch is updated"
+      git:
+        repo: https://github.com/oscarcpz/ansible.git
+        dest: "{{ src_path }}/ansible"
+        version: "{{ git_branch }}"
+      tags:
+        - update
+      register: result
+
+    - debug:
+        var: result

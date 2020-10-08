@@ -1,0 +1,9 @@
+---
+conda_path: /opt/anaconda
+conda_envs: "{{ conda_path }}/envs"
+logs_dir: "/var/log/jupyterhub/{{ ansible_host }}/{{ jupyter.dns }}"
+jupyterhub_home: /opt/jupyterhub
+jupyters:
+  - { name: 'jupyterhub1', port1: '8000', port2: '8001', port3: '8081', dns: 'jh1' }
+  - { name: 'jupyterhub2', port1: '18000', port2: '18001', port3: '18081', dns: 'jh2' }
+...

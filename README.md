@@ -56,6 +56,24 @@ $ vagrant destroy
 * box: debian/buster64
 * ip: 10.0.0.10
 * hostname: oneserver
+* RAM: 2Gb
+* cores: 2
+
+#### several_servers
+
+__server1__
+* box: devian/buster64
+* ip: 10.0.0.101
+* hostname: server1
+* RAM: 1Gb
+* cores: 1
+
+__server2__
+* box: devian/buster64
+* ip: 10.0.0.102
+* hostname: server2
+* RAM: 1Gb
+* cores: 1
 
 ### SSH
 
@@ -74,6 +92,7 @@ Files to define servers where Ansible is going to work
 
 * inventory-local - definition to work with the local machine
 * inventory-vagrant-oneserver - definition to work with vagrant machines
+* inventory-vagrant-severalservers - definition to work with multiple vagrant virtual machines
 
 ## Test Ansible
 
@@ -100,7 +119,7 @@ $ ansible-playbook -i <inventory> example
 $ ansible-playbook -i <inventory> example --ask-sudo-pass
 ~~~
 
-## Index
+## Examples Index
 
 ### 01 Gather facts
 
@@ -111,6 +130,43 @@ $ ansible-playbook -i inventory-local 01_gather_facts/example_1.yml
 $ ansible-playbook -i inventory-vagrant-oneserver 01_gather_facts/example_1.yml
 $ ansible-playbook -i inventory-local 01_gather_facts/example_2.yml
 $ ansible-playbook -i inventory-vagrant-oneserver 01_gather_facts/example_2.yml
+~~~
+
+### 02 Galaxy
+
+Example of how to use third party roles from Ansible Galaxy. In this example, we use a role to install docker and docker-compose in a machine.
+
+For futher information about the role you can go to the following urls:
+* [Pip](https://galaxy.ansible.com/geerlingguy/pip)
+* [Docker](https://galaxy.ansible.com/geerlingguy/docker)
+
+~~~
+$ ansible-playbook -i inventory-vagrant-oneserver 02_galaxy/install_docker.yml
+~~~
+
+### 03 Easy tasks
+
+#### Clone
+
+An easy way to clone or update a repo using Git. In this example we are using vars from file and inside playbook
+
+~~~
+$ ansible-playbook -i inventory-vagrant-oneserver 03_easy_tasks/clone.yml
+~~~
+
+### 04 Real world
+
+A real use for Ansible. Install Jupyterhub in a machine
+
+### 05 AWS
+
+An example of how you can use Ansible to connect with AWS EC2 instances.
+
+~~~
+$ conda create --name ansible python=3 
+$ conda activate ansible 
+$ pip install boto 
+$ pip install awscli
 ~~~
 
 ## References

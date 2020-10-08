@@ -1,0 +1,21 @@
+---
+# ansible-playbook -i inventory-aws stop-aws.yml
+- name: Stop aws infraestructure
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/project.yml
+  tasks:
+    - name: Stop instances
+      ec2:
+        instance_ids: '{{ instance_id }}'
+        region: '{{ region }}'
+        state: stopped
+        wait: True
+      register: outputec2
+      tags: ec2
+
+    - debug:
+        var: outputec2
+      tags: ec2
+...
