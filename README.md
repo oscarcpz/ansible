@@ -221,6 +221,11 @@ $ ansible-playbook -i inventory-aws start_ec2.yml
 $ ansible-playbook -i inventory-aws stop_ec2.yml
 ~~~
 
+### 06 More examples
+
+* docker-run.yml - examples to work with docker
+* ssh_keys_generator.yml - example to run complex shell commands
+
 ## References
 
 * [Ansible](https://docs.ansible.com/ansible/latest/user_guide/index.html)
