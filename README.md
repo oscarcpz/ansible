@@ -119,6 +119,46 @@ $ ansible-playbook -i <inventory> example
 $ ansible-playbook -i <inventory> example --ask-sudo-pass
 ~~~
 
+### Loop of a collection of tasks
+
+~~~
+- name: Install Jupyterhub
+  include_role:
+    name: jupyterhub
+  loop: '{{ jupyters }}'
+  loop_control:
+    loop_var: jupyter
+~~~
+
+### Use of tags
+
+~~~
+$ ansible-playbook -i xxx myplaybook.yml --tags tag1, tag2
+~~~
+
+### Skip tags
+
+~~~
+$ ansible-playbook -i xxx myplaybook.yml --skip-tags tag1, tag2
+~~~
+
+### always and never tag
+
+~~~
+$ ansible-playbook -i xxx myplaybook.yml --skip-tags always
+$ ansible-playbook -i xxx myplaybook.yml --tags never
+~~~
+
+[More information](https://docs.ansible.com/ansible/latest/user_guide/playbooks_tags.html#special-tags-always-and-never)
+
+### extra-vars
+
+[Defining variables at runtime](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#defining-variables-at-runtime)
+
+~~~
+$ ansible-playbook -i xxx myplaybook.yml --extra-vars '{"version": "1.2.3"}'
+~~~
+
 ## Examples Index
 
 ### 01 Gather facts
@@ -158,15 +198,27 @@ $ ansible-playbook -i inventory-vagrant-oneserver 03_easy_tasks/clone.yml
 
 A real use for Ansible. Install Jupyterhub in a machine
 
+~~~
+$ ansible-playbook -i inventory-xxx 04_real_world/install_several_jupyterhub.yml
+~~~
+
 ### 05 AWS
 
 An example of how you can use Ansible to connect with AWS EC2 instances.
 
+First of all, you need to have configured and environment with AWS CLI
 ~~~
 $ conda create --name ansible python=3 
 $ conda activate ansible 
 $ pip install boto 
 $ pip install awscli
+~~~
+
+And then, you could run playbooks
+~~~
+$ ansible-playbook -i inventory-aws check_status.yml
+$ ansible-playbook -i inventory-aws start_ec2.yml
+$ ansible-playbook -i inventory-aws stop_ec2.yml
 ~~~
 
 ## References

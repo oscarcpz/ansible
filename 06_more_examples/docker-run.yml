@@ -1,0 +1,29 @@
+---
+# ansible-playbook -i xx docker-run.yml --extra-vars '{ "container_name": "name", "image_name": "img" }'
+- name: Run docker services
+  hosts: all
+  gather_facts: no
+
+  tasks:
+
+    - name: "Check if {{ container_name }} exists"
+      command: "docker ps -f 'name={{ container_name }}' --format '{{ '{{' }}.Names{{ '}}' }}'"
+      register: result
+
+    - name: "Docker run {{ container_name }}"
+      # Example, please, modify command to run with correct arguments
+      command: "docker run --name {{ container_name }} -d {{ image_name }}"
+      register: output
+      when: result.stdout == ""
+
+    - name: "Restart {{ container_name }} container if exists"
+      command: "docker restart {{ container_name }}"
+      when: result.stdout != ""
+
+    - name: Get network name
+      command: "docker inspect {{ container_name }} --format='{{ '{{' }}.HostConfig.NetworkMode{{ '}}' }}'"
+      register: network_name
+
+    - debug:
+        var: network_name.stdout
+...

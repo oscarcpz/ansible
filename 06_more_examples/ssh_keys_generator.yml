@@ -1,0 +1,32 @@
+---
+# $ ansible-playbook ssh_keys_generator.yml --extra-vars '{"playbook_dir":"path1", "keys_path":"path2"}'
+
+- hosts: localhost
+  name: SHH keys generator
+  vars_files:
+    - vars/project.yml
+  vars:
+    keys_path: "{{ playbook_dir }}/keys"
+  tasks:
+    - name: Create keys folder
+      file:
+        path: "{{ keys_path }}"
+        state: directory
+    - name: Generate ssh key ENV1
+      command : ssh-keygen -q -t rsa -f {{ keys_path }}/env1 -C "" -N ""
+      args:
+        creates: "{{ keys_path }}/env1"
+    - name: chmod ssh key PRE
+      file:
+        path: "{{ keys_path }}/env1"
+        mode: '600'
+
+    - name: Generate ssh key ENV2
+      command : ssh-keygen -q -t rsa -f {{ keys_path }}/env2 -C "" -N ""
+      args:
+        creates: "{{ keys_path }}/env2"
+    - name: chmod ssh key ENV2
+      file:
+        path: "{{ keys_path }}/env2"
+        mode: '600'
+...
