@@ -1,2 +1,11 @@
 ---
+- name: Copy file
+  hosts: all
+
+  tasks:
+
+    - name: "Copy file from ansible machine"
+      copy:
+        src: "file_from_ansible.txt"
+        dest: "/home/vagrant"
 ...
