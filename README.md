@@ -75,6 +75,29 @@ __server2__
 * RAM: 1Gb
 * cores: 1
 
+#### n_servers
+
+__nostromo__
+* box: devian/buster64
+* ip: 10.0.0.10
+* hostname: nostromo
+* RAM: 1Gb
+* cores: 1
+
+__galactica__
+* box: devian/buster64
+* ip: 10.0.0.11
+* hostname: galactica
+* RAM: 1Gb
+* cores: 1
+
+__enterprise__
+* box: devian/buster64
+* ip: 10.0.0.12
+* hostname: enterprise
+* RAM: 1Gb
+* cores: 1
+
 ### SSH
 
 #### Configure SSH keys for remote access
