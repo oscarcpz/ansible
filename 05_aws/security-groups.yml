@@ -1,0 +1,118 @@
+# Para hacer uso de este script es necesario tener instalado el modulo de AWS
+#
+# $ ansible-galaxy collection install amazon.aws
+#
+# Fichero de credenciales: es necesario disponer del fichero de credenciales en $HOME/.aws/credentials
+# para poder conectar con la cuenta AWS
+#
+# Referencia: https://docs.ansible.com/ansible/latest/collections/amazon/aws/ec2_group_module.html
+# Referencia: https://docs.ansible.com/ansible/latest/collections/amazon/aws/ec2_group_facts_module.html
+# Referencia: https://boto.readthedocs.io/en/latest/boto_config_tut.html
+# Referencia: https://stackoverflow.com/questions/36304130/add-a-security-group-to-running-instance-using-ansible
+# Referencia: https://docs.aws.amazon.com/cli/latest/reference/ec2/modify-instance-attribute.html
+#
+# Ejemplos de uso:
+# $ ansible-playbook -i inventory-localhost security-groups.yml --tags pro
+# $ $ ansible-playbook -i inventory-localhost security-groups.yml --tags create
+---
+- hosts: all
+  name: Utilidad para manejar los security groups
+  gather_facts: true
+
+  vars:
+    ec2_group_name_PRO: "sg_xxx"
+    ec2_group_name_INTERVENCION: "sg_xxx-intervencion"
+    ec2_group_id_PRO: "sg-xxxx" # grupo de seguridad con las reglas de las maquinas de produccion
+    vpc_id: "vpc-xxx"
+    instance_id: "i-xxxx"
+    sg_principal_id: "sg-xxxx"
+
+    aws_region: "us-east-1"
+    aws_access: "xxx"
+    aws_secret: "xxx"
+
+  tasks:
+
+    - amazon.aws.ec2_group_info:
+        aws_access_key: "{{ aws_access }}"
+        aws_secret_key: "{{ aws_secret }}"
+        region: "{{ aws_region }}"
+        filters:
+          group-id: "{{ ec2_group_id_PRO }}"
+      register: security_group_info_pro
+      tags:
+        - pro
+
+    - debug:
+        var: security_group_info_pro
+      tags:
+        - pro
+
+    - amazon.aws.ec2_group_info:
+        aws_access_key: "{{ aws_access }}"
+        aws_secret_key: "{{ aws_secret }}"
+        region: "{{ aws_region }}"
+        filters:
+          group-id: "{{ ec2_group_name_INTERVENCION }}"
+      register: security_group_info_intervencion
+      tags:
+        - intervencion
+
+    - debug:
+        var: security_group_info_intervencion
+      tags:
+        - intervencion
+
+    - name: "Crea o modifica el Security Group {{ ec2_group_name_INTERVENCION }}"
+      amazon.aws.ec2_group:
+        name: "{{ ec2_group_name_INTERVENCION }}"
+        description: "Ansible SG"
+        vpc_id: "{{ vpc_id }}"
+        region: "{{ aws_region }}"
+        aws_secret_key: "{{ aws_secret }}"
+        aws_access_key: "{{ aws_access }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 8000
+            cidr_ip: 1.2.3.4/32
+            rule_desc: "Custom 1"
+          - proto: tcp
+            ports:
+              - 9000
+            cidr_ip: 1.2.3.4/32
+            rule_desc: "Custom 2"
+        tags:
+          Owner: "Oscar"
+          Creator: "Ansible"
+          Name: "SG_xxx_INTERVENCION"
+          Project: "my project"
+          Modificado: "{{ ansible_date_time.year }}.{{ ansible_date_time.month }}.{{ ansible_date_time.day }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}"
+          Usuario: "{{ ansible_user_id }}"
+      tags:
+        - create
+      register: sg_output
+
+    - debug:
+        msg: "SG ID = {{ sg_output.group_id }}"
+      tags:
+        - create
+
+    - fail:
+        msg: "Es obligatorio indicar el id de la instancia a la que se le va a asociar el nuevo grupo de seguridad"
+      when: instance_id == ""
+      tags:
+        - create
+
+    - fail:
+        msg: "Es muy importante indicar el grupo de seguridad principal ya existente en la instancia"
+      when: sg_principal_id == ""
+      tags:
+        - create
+
+    - name: "Asigna el nuevo grupo de seguridad a la instancia"
+        # IMPORTANTE: debe indicarse siempre el grupo de seguridad principal además del nuevo
+        shell: "aws ec2 modify-instance-attribute --instance-id {{ instance_id }} --groups {{ sg_principal_id }} {{sg_output.group_id}}"
+      tags:
+        - create
+...
