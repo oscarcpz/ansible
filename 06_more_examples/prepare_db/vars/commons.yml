@@ -1,0 +1,10 @@
+---
+sqlserver_name: sqlserver-test
+sqlserver_password: myP4ss
+sqlserver_port: 1433 # puerto externo del host, no el interno de docker (aunque pueden coincidir 1433:1433)
+postgres_name: postgres-test
+postgres_password: myP4ss
+postgres_user: postgres
+postgres_db: postgres
+postgres_port: 5432 # puerto externo del host, no el interno de docker (aunque pueden coincidir 5432:5432)
+...

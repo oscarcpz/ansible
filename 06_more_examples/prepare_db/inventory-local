@@ -1,0 +1,2 @@
+[DBS]
+localhost ansible_connection=local ansible_user=oscarcpz ansible_python_interpreter=/Users/oscarcpz/miniconda3/envs/ansible/bin/python

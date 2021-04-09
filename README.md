@@ -231,9 +231,9 @@ An example of how you can use Ansible to connect with AWS EC2 instances.
 
 First of all, you need to have configured and environment with AWS CLI
 ~~~
-$ conda create --name ansible python=3 
-$ conda activate ansible 
-$ pip install boto 
+$ conda create --name ansible python=3
+$ conda activate ansible
+$ pip install boto
 $ pip install awscli
 ~~~
 
@@ -248,6 +248,7 @@ $ ansible-playbook -i inventory-aws stop_ec2.yml
 
 * docker-run.yml - examples to work with docker
 * ssh_keys_generator.yml - example to run complex shell commands
+* prepare_db - directory with examples to create a DB in Docker with init scripts
 
 ## References
 

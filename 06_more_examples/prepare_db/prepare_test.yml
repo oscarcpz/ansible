@@ -1,0 +1,94 @@
+---
+- name: Prepare for tests
+  hosts: all
+  gather_facts: no
+
+  vars_files:
+    - vars/commons.yml
+
+  tasks:
+
+    - name: "Ensure a clean SQLServer container"
+      command: "docker rm -f {{ sqlserver_name }}"
+      tags:
+        - all
+        - sqlserver
+
+    - name: "Up SQLServer docker container"
+      command: "docker run --name {{ sqlserver_name }} -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD={{ sqlserver_password }}' -p {{ sqlserver_port }}:1433 -d mcr.microsoft.com/mssql/server:2017-latest"
+      tags:
+        - all
+        - sqlserver
+
+    - name: "Copy init script to {{ sqlserver_name }} container"
+      command: "docker cp sql/sqlserver/init.sql {{ sqlserver_name }}:/tmp"
+      tags:
+        - all
+        - sqlserver
+
+    - wait_for: # hay que esperar a que el servidor de base de datos se inicie por completo
+        port: "{{ sqlserver_port }}"
+        delay: 30 # menos de este tiempo y da error en el siguiente comando
+      tags:
+        - all
+        - sqlserver
+
+    - name: "Init DB in {{ sqlserver_name }}"
+      command: "docker exec {{ sqlserver_name }} bash -c \"/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P {{ sqlserver_password }} -i /tmp/init.sql\""
+      tags:
+        - all
+        - sqlserver
+
+    - name: "Ensure a clean PostgreSQL container"
+      command: "docker rm -f {{ postgres_name }}"
+      tags:
+        - all
+        - postgres
+
+    - name: "Up PostgreSQL docker container"
+      command: "docker run --name {{ postgres_name }} -p {{ postgres_port }}:5432 -e POSTGRES_PASSWORD={{ postgres_password }} -d postgres"
+      tags:
+        - all
+        - postgres
+
+    - wait_for:
+        port: "{{ postgres_port }}"
+        delay: 20
+      tags:
+        - all
+        - postgres
+
+    - name: "[Step 1] Copy {{ playbook_dir }}/templates/pgpass to {{ postgres_name }} container"
+      template:
+        src: "{{ playbook_dir }}/templates/pgpass"
+        dest: "{{ playbook_dir }}/pgpass_mod"
+      tags:
+        - all
+        - postgres
+
+    - name: "[Step 2] Copy {{ playbook_dir }}/templates/pgpass to {{ postgres_name }} container"
+      command: "docker cp {{ playbook_dir }}/pgpass_mod {{ postgres_name }}:/root/.pgpass"
+      tags:
+        - all
+        - postgres
+
+    - name: "[Step 3] Copy {{ playbook_dir }}/templates/pgpass to {{ postgres_name }} container"
+      file:
+        path: "{{ playbook_dir }}/pgpass_mod"
+        state: absent
+      tags:
+        - all
+        - postgres
+
+    - name: "Copy init script to {{ postgres_name }} container"
+      command: "docker cp sql/postgres/init.sql {{ postgres_name }}:/tmp"
+      tags:
+        - all
+        - postgres
+
+    - name: "Init DB in {{ postgres_name }}"
+      command: "docker exec {{ postgres_name }} bash -c \"psql -h localhost -U postgres -d postgres --file=/tmp/init.sql\""
+      tags:
+        - all
+        - postgres
+...

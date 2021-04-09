@@ -1,0 +1,15 @@
+---
+- name: Prepare for tests
+  hosts: all
+  gather_facts: no
+
+  vars_files:
+    - vars/commons.yml
+
+  tasks:
+    - name: "Stop SQLServer"
+      command: "docker rm -f {{ sqlserver_name }}"
+
+    - name: "Stop Postgres"
+      command: "docker rm -f {{ postgres_name }}"
+...
